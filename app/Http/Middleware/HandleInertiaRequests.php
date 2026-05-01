@@ -1,41 +1,39 @@
 <?php
-// app/Http/Middleware/HandleInertiaRequests.php
 
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-use App\Models\Part;
-use App\Models\JobOrder;
 
 class HandleInertiaRequests extends Middleware
 {
+    /**
+     * The root template that is loaded on the first page visit.
+     *
+     * @var string
+     */
     protected $rootView = 'app';
 
+    /**
+     * Determine the current asset version.
+     */
+    public function version(Request $request): ?string
+    {
+        return parent::version($request);
+    }
+
+    /**
+     * Define the props that are shared by default.
+     *
+     * @return array<string, mixed>
+     */
     public function share(Request $request): array
     {
         return [
             ...parent::share($request),
-
             'auth' => [
-                'user'        => $request->user(),
-                'permissions' => $request->user()?->getAllPermissions()->pluck('name'),
-                'roles'       => $request->user()?->getRoleNames(),
+                'user' => $request->user(),
             ],
-
-            'flash' => [
-                'success' => session('success'),
-                'error'   => session('error'),
-            ],
-
-            // Shared global counts for sidebar badges
-            'lowStockCount' => fn() => $request->user()
-                ? Part::whereColumn('quantity_in_stock', '<=', 'reorder_level')->count()
-                : 0,
-
-            'openJobCount' => fn() => $request->user()
-                ? JobOrder::whereIn('status', ['pending', 'in_progress', 'waiting_parts'])->count()
-                : 0,
         ];
     }
 }

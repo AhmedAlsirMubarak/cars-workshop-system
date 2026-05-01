@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use Inertia\Response;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Models\Part;
 
 class InventoryController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): \Illuminate\View\View
     {
         $parts = Part::query()
             ->when($request->search, fn ($q, $s) => $q
@@ -24,7 +23,7 @@ class InventoryController extends Controller
 
         $categories = Part::distinct()->pluck('category')->filter()->values();
 
-        return Inertia::render('Inventory/Index', compact('parts', 'categories'));
+        return view('inventory.index', compact('parts', 'categories'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -66,10 +65,46 @@ class InventoryController extends Controller
         return back()->with('success', __('app.inventory.updated'));
     }
 
+    public function export(Request $request): StreamedResponse
+    {
+        $parts = Part::query()
+            ->when($request->search,   fn ($q, $s) => $q->where('name', 'like', "%{$s}%")->orWhere('sku', 'like', "%{$s}%"))
+            ->when($request->category, fn ($q, $c) => $q->where('category', $c))
+            ->when($request->low_stock, fn ($q)    => $q->whereColumn('quantity_in_stock', '<=', 'reorder_level'))
+            ->orderBy('name')
+            ->get();
+
+        $filename = 'inventory-' . now()->format('Y-m-d') . '.csv';
+
+        return response()->streamDownload(function () use ($parts) {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, ['SKU', 'Name', 'Brand', 'Category', 'Cost (OMR)', 'Selling (OMR)', 'Stock Qty', 'Reorder Level', 'Status', 'Location', 'Supplier']);
+
+            foreach ($parts as $part) {
+                fputcsv($handle, [
+                    $part->sku,
+                    $part->name,
+                    $part->brand ?? '',
+                    $part->category ?? '',
+                    number_format($part->cost_price, 3),
+                    number_format($part->selling_price, 3),
+                    $part->quantity_in_stock,
+                    $part->reorder_level,
+                    $part->quantity_in_stock <= $part->reorder_level ? 'Low Stock' : 'OK',
+                    $part->location ?? '',
+                    $part->supplier ?? '',
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, ['Content-Type' => 'text/csv']);
+    }
+
     public function destroy(Part $part): RedirectResponse
     {
-        $part->update(['is_active' => false]);
+        $part->delete();
 
-        return back()->with('success', __('app.inventory.deactivated'));
+        return back()->with('success', 'Part deleted successfully.');
     }
 }

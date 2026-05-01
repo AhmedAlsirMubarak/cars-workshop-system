@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(php artisan *)",
+      "Read(//c/laragon/etc/apache2/sites-enabled/**)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://car-workshop.test/)",
+      "Bash(powershell -Command \"Get-Content 'C:\\\\laragon\\\\www\\\\car-workshop\\\\storage\\\\logs\\\\laravel.log' -Tail 80\")",
+      "Bash(php -v)",
+      "Bash(curl -s http://car-workshop.test/up)",
+      "Bash(powershell -Command \"Select-String -Path 'C:\\\\laragon\\\\bin\\\\apache\\\\httpd-2.4.63-240904-win64-VS17\\\\conf\\\\httpd.conf' -Pattern 'fcgid|mod_php|Include' | Select-Object -First 20\")",
+      "Read(//c/laragon/bin/apache/**)",
+      "Bash(mysql -u root car_workshop_management_system -e \"SHOW CREATE TABLE permissions\\\\G\")",
+      "Read(//c/laragon/bin/php/**)",
+      "Read(//c/laragon/etc/apache2/**)",
+      "Bash(composer check-platform-reqs *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5174/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost/car-workshop/public/login)",
+      "Bash(curl -s -c /tmp/j4.txt -b /tmp/j4.txt -L http://localhost/car-workshop/public/payroll -o /dev/null -w \"%{http_code}\")"
+    ],
+    "additionalDirectories": [
+      "c:\\laragon\\bin\\apache\\httpd-2.4.66-260107-Win64-VS18\\conf"
+    ]
+  }
+}

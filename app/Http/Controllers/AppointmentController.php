@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use Inertia\Response;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use App\Models\Appointment;
+use App\Models\Customer;
+use App\Models\Vehicle;
 use App\Models\JobOrder;
 use App\Models\Staff;
 
 class AppointmentController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): \Illuminate\View\View
     {
         $appointments = Appointment::with(['customer', 'vehicle', 'staff.user'])
             ->when($request->date,     fn ($q, $d)  => $q->whereDate('scheduled_at', $d))
@@ -24,7 +24,10 @@ class AppointmentController extends Controller
 
         $staff = Staff::with('user')->where('status', 'active')->get();
 
-        return Inertia::render('Appointments/Index', compact('appointments', 'staff'));
+        $customers = Customer::select('id', 'name')->orderBy('name')->get();
+        $vehicles  = Vehicle::with('customer')->select('id', 'customer_id', 'make', 'model', 'plate_number')->get();
+
+        return view('appointments.index', compact('appointments', 'staff', 'customers', 'vehicles'));
     }
 
     public function store(Request $request): RedirectResponse

@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use Inertia\Response;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use App\Models\Customer;
 use App\Models\Vehicle;
 
 class VehicleController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): \Illuminate\View\View
     {
         $vehicles = Vehicle::with('customer')
             ->when($request->search, fn ($q, $s) => $q
@@ -22,7 +21,12 @@ class VehicleController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return Inertia::render('Vehicles/Index', compact('vehicles'));
+        return view('vehicles.index', compact('vehicles'));
+    }
+
+    public function create(Request $request, Customer $customer): \Illuminate\View\View
+    {
+        return view('vehicles.create', compact('customer'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -47,11 +51,11 @@ class VehicleController extends Controller
             ->with('success', __('app.vehicles.created'));
     }
 
-    public function show(Vehicle $vehicle): Response
+    public function show(Vehicle $vehicle): \Illuminate\View\View
     {
         $vehicle->load(['customer', 'jobOrders.staff.user', 'appointments.staff.user']);
 
-        return Inertia::render('Vehicles/Show', compact('vehicle'));
+        return view('vehicles.show', compact('vehicle'));
     }
 
     public function update(Request $request, Vehicle $vehicle): RedirectResponse

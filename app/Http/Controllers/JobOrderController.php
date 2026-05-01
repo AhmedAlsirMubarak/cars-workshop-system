@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use Inertia\Response;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +12,7 @@ use App\Models\Part;
 
 class JobOrderController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): \Illuminate\View\View
     {
         $jobs = JobOrder::with(['customer', 'vehicle', 'staff.user'])
             ->when($request->status,   fn ($q, $s)  => $q->where('status', $s))
@@ -29,13 +27,13 @@ class JobOrderController extends Controller
 
         $staff = Staff::with('user')->where('status', 'active')->get();
 
-        return Inertia::render('Jobs/Index', compact('jobs', 'staff'));
+        return view('jobs.index', compact('jobs', 'staff'));
     }
 
-    public function create(Request $request): Response
+    public function create(Request $request): \Illuminate\View\View
     {
-        return Inertia::render('Jobs/Create', [
-            'customers'           => Customer::select('id', 'name', 'phone')->get(),
+        return view('jobs.create', [
+            'customers'           => Customer::with('vehicles')->select('id', 'name', 'phone')->get(),
             'staff'               => Staff::with('user')->where('status', 'active')->get(),
             'selected_vehicle_id' => $request->vehicle_id,
         ]);
@@ -72,7 +70,7 @@ class JobOrderController extends Controller
             ->with('success', __('app.jobs.created', ['number' => $job->job_number]));
     }
 
-    public function show(JobOrder $job): Response
+    public function show(JobOrder $job): \Illuminate\View\View
     {
         $job->load([
             'customer',
@@ -86,7 +84,7 @@ class JobOrderController extends Controller
         $parts = Part::where('is_active', true)
             ->get(['id', 'sku', 'name', 'selling_price', 'quantity_in_stock']);
 
-        return Inertia::render('Jobs/Show', compact('job', 'parts'));
+        return view('jobs.show', compact('job', 'parts'));
     }
 
     public function update(Request $request, JobOrder $job): RedirectResponse

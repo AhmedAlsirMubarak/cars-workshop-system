@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use Inertia\Response;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use App\Models\Customer;
 
 class CustomerController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): \Illuminate\View\View
     {
         $customers = Customer::query()
             ->when($request->search, fn ($q, $s) => $q
@@ -23,12 +21,12 @@ class CustomerController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return Inertia::render('Customers/Index', compact('customers'));
+        return view('customers.index', compact('customers'));
     }
 
-    public function create(): Response
+    public function create(): \Illuminate\View\View
     {
-        return Inertia::render('Customers/Create');
+        return view('customers.create');
     }
 
     public function store(Request $request): RedirectResponse
@@ -50,7 +48,7 @@ class CustomerController extends Controller
             ->with('success', __('app.customers.created'));
     }
 
-    public function show(Customer $customer): Response
+    public function show(Customer $customer): \Illuminate\View\View
     {
         $customer->load([
             'vehicles',
@@ -59,15 +57,15 @@ class CustomerController extends Controller
             'invoices',
         ]);
 
-        return Inertia::render('Customers/Show', [
+        return view('customers.show', [
             'customer'      => $customer,
             'total_revenue' => $customer->total_revenue,
         ]);
     }
 
-    public function edit(Customer $customer): Response
+    public function edit(Customer $customer): \Illuminate\View\View
     {
-        return Inertia::render('Customers/Edit', compact('customer'));
+        return view('customers.edit', compact('customer'));
     }
 
     public function update(Request $request, Customer $customer): RedirectResponse

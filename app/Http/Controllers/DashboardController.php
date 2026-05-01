@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use Inertia\Response;
 use App\Models\JobOrder;
 use App\Models\Invoice;
 use App\Models\Part;
@@ -11,9 +9,9 @@ use App\Models\Appointment;
 
 class DashboardController extends Controller
 {
-    public function index(): Response
+    public function index(): \Illuminate\View\View
     {
-        return Inertia::render('Dashboard/Index', [
+        return view('dashboard.index', [
             'stats' => [
                 'open_jobs' => JobOrder::whereIn('status', ['pending', 'in_progress'])->count(),
 

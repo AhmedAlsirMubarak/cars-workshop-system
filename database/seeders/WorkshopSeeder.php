@@ -55,9 +55,10 @@ class WorkshopSeeder extends Seeder
         $adminUser = User::firstOrCreate(
             ['email' => 'admin@workshop.com'],
             [
-                'name'     => 'Admin User',
-                'phone'    => '+968 9000 0001',
-                'password' => bcrypt('password'),
+                'name'               => 'Admin User',
+                'phone'              => '+968 9000 0001',
+                'password'           => bcrypt('password'),
+                'email_verified_at'  => now(),
             ]
         );
         $adminUser->assignRole('admin');
@@ -71,9 +72,10 @@ class WorkshopSeeder extends Seeder
         $managerUser = User::firstOrCreate(
             ['email' => 'manager@workshop.com'],
             [
-                'name'     => 'Workshop Manager',
-                'phone'    => '+968 9000 0002',
-                'password' => bcrypt('password'),
+                'name'               => 'Workshop Manager',
+                'phone'              => '+968 9000 0002',
+                'password'           => bcrypt('password'),
+                'email_verified_at'  => now(),
             ]
         );
         $managerUser->assignRole('manager');
@@ -87,9 +89,10 @@ class WorkshopSeeder extends Seeder
         $techUser = User::firstOrCreate(
             ['email' => 'tech@workshop.com'],
             [
-                'name'     => 'Ahmed Al-Rashidi',
-                'phone'    => '+968 9000 0003',
-                'password' => bcrypt('password'),
+                'name'               => 'Ahmed Al-Rashidi',
+                'phone'              => '+968 9000 0003',
+                'password'           => bcrypt('password'),
+                'email_verified_at'  => now(),
             ]
         );
         $techUser->assignRole('technician');

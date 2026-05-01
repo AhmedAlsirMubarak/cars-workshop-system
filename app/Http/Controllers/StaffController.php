@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use Inertia\Response;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use App\Models\Staff;
@@ -11,7 +9,7 @@ use App\Models\User;
 
 class StaffController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): \Illuminate\View\View
     {
         $staff = Staff::with('user')
             ->when($request->status, fn ($q, $s) => $q->where('status', $s))
@@ -19,7 +17,7 @@ class StaffController extends Controller
             ->withCount(['jobOrders as total_jobs'])
             ->get();
 
-        return Inertia::render('Staff/Index', compact('staff'));
+        return view('staff.index', compact('staff'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -56,7 +54,7 @@ class StaffController extends Controller
         return back()->with('success', __('app.staff.created'));
     }
 
-    public function show(Staff $staff): Response
+    public function show(Staff $staff): \Illuminate\View\View
     {
         $staff->load(['user', 'jobOrders.customer', 'jobOrders.vehicle']);
 
@@ -69,7 +67,7 @@ class StaffController extends Controller
                 ->sum('invoices.total'),
         ];
 
-        return Inertia::render('Staff/Show', compact('staff', 'metrics'));
+        return view('staff.show', compact('staff', 'metrics'));
     }
 
     public function update(Request $request, Staff $staff): RedirectResponse

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use Inertia\Response;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use App\Models\Invoice;
@@ -11,7 +9,7 @@ use App\Models\JobOrder;
 
 class InvoiceController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): \Illuminate\View\View
     {
         $invoices = Invoice::with(['customer', 'jobOrder'])
             ->when($request->status, fn ($q, $s) => $q->where('status', $s))
@@ -35,14 +33,14 @@ class InvoiceController extends Controller
                 ->count(),
         ];
 
-        return Inertia::render('Invoices/Index', compact('invoices', 'summary'));
+        return view('invoices.index', compact('invoices', 'summary'));
     }
 
-    public function show(Invoice $invoice): Response
+    public function show(Invoice $invoice): \Illuminate\View\View
     {
         $invoice->load(['customer', 'jobOrder.items', 'jobOrder.parts.part', 'payments.receivedBy']);
 
-        return Inertia::render('Invoices/Show', compact('invoice'));
+        return view('invoices.show', compact('invoice'));
     }
 
     public function generateFromJob(JobOrder $job): RedirectResponse
