@@ -1,21 +1,21 @@
-<x-layouts.app title="Customers">
+<x-layouts.app title="{{ __('Customers') }}">
     <form method="GET" action="{{ route('customers.index') }}" class="flex flex-wrap items-center gap-3 mb-6">
         <div x-data="searchBox()">
             <input type="text" name="search" x-model="query" @input="debounce()"
-                placeholder="Search by name, phone or email…" class="input w-64">
+                placeholder="{{ __('Search by name, phone or email…') }}" class="input w-64">
         </div>
         <select name="status" onchange="this.form.submit()" class="input w-36">
-            <option value="">All statuses</option>
-            <option value="active" @selected(request('status')==='active')>Active</option>
-            <option value="inactive" @selected(request('status')==='inactive')>Inactive</option>
+            <option value="">{{ __('All statuses') }}</option>
+            <option value="active" @selected(request('status')==='active')>{{ __('Active') }}</option>
+            <option value="inactive" @selected(request('status')==='inactive')>{{ __('Inactive') }}</option>
         </select>
-        <a href="{{ route('customers.create') }}" class="ms-auto btn-primary">+ New Customer</a>
+        <a href="{{ route('customers.create') }}" class="ms-auto btn-primary">+ {{ __('New Customer') }}</a>
     </form>
 
     <div class="card overflow-hidden">
         <div class="hidden sm:block overflow-x-auto">
             <table class="table">
-                <thead><tr><th>Name</th><th>Phone</th><th>City</th><th class="text-center">Vehicles</th><th class="text-center">Jobs</th><th>Status</th><th></th></tr></thead>
+                <thead><tr><th>{{ __('Name') }}</th><th>{{ __('Phone') }}</th><th>{{ __('City') }}</th><th class="text-center">{{ __('Vehicles') }}</th><th class="text-center">{{ __('Jobs') }}</th><th>{{ __('Status') }}</th><th></th></tr></thead>
                 <tbody>
                     @forelse($customers as $c)
                     <tr class="cursor-pointer" onclick="location='{{ route('customers.show', $c) }}'">
@@ -29,11 +29,11 @@
                         <td class="text-center font-medium text-gray-700">{{ $c->job_orders_count }}</td>
                         <td>@include('components.status-badge', ['status' => $c->status])</td>
                         <td class="text-end">
-                            <a href="{{ route('customers.show', $c) }}" class="text-xs text-orange-500 hover:underline" onclick="event.stopPropagation()">View →</a>
+                            <a href="{{ route('customers.show', $c) }}" class="text-xs text-orange-500 hover:underline" onclick="event.stopPropagation()">{{ __('View') }} →</a>
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="7" class="py-12 text-center text-sm text-gray-400">No customers found.</td></tr>
+                    <tr><td colspan="7" class="py-12 text-center text-sm text-gray-400">{{ __('No customers found.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -47,11 +47,11 @@
                 </div>
                 <div class="text-end shrink-0">
                     @include('components.status-badge', ['status' => $c->status])
-                    <p class="text-xs text-gray-400 mt-1">{{ $c->vehicles_count }} vehicles · {{ $c->job_orders_count }} jobs</p>
+                    <p class="text-xs text-gray-400 mt-1">{{ $c->vehicles_count }} {{ __('vehicles') }} · {{ $c->job_orders_count }} {{ __('jobs') }}</p>
                 </div>
             </a>
             @empty
-            <p class="py-12 text-center text-sm text-gray-400">No customers found.</p>
+            <p class="py-12 text-center text-sm text-gray-400">{{ __('No customers found.') }}</p>
             @endforelse
         </div>
     </div>

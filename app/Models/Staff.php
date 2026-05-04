@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Staff extends Model
@@ -13,6 +14,9 @@ class Staff extends Model
 
     protected $fillable = [
         'user_id',
+        'name',
+        'phone',
+        'role',
         'employee_id',
         'specialization',
         'hourly_rate',
@@ -44,6 +48,11 @@ class Staff extends Model
         return $this->hasMany(JobOrder::class);
     }
 
+    public function assignedJobs(): BelongsToMany
+    {
+        return $this->belongsToMany(JobOrder::class, 'job_order_staff');
+    }
+
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class);
@@ -62,6 +71,24 @@ class Staff extends Model
     public function payrolls(): HasMany
     {
         return $this->hasMany(Payroll::class);
+    }
+
+    // ── Accessors ─────────────────────────────────────────────
+
+    /** Single source of truth for display name regardless of whether staff has a user account */
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->name ?? $this->user?->name ?? '—';
+    }
+
+    public function getDisplayPhoneAttribute(): ?string
+    {
+        return $this->phone ?? $this->user?->phone;
+    }
+
+    public function getDisplayRoleAttribute(): ?string
+    {
+        return $this->role ?? $this->user?->roles->first()?->name;
     }
 
     // ── Helpers ───────────────────────────────────────────────

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Invoice;
 use App\Models\JobOrder;
 
@@ -49,13 +50,21 @@ class InvoiceController extends Controller
             return redirect()->route('invoices.show', $job->invoice);
         }
 
+        $job->load('items');
+
+        $itemsSum  = $job->items->sum(fn ($i) => (float) $i->quantity * (float) $i->unit_price);
+        $subtotal  = round((float) $job->labour_cost + (float) $job->parts_cost + $itemsSum, 3);
+        $discount  = (float) $job->discount;
+        $taxAmount = round(($subtotal - $discount) * ((float) $job->tax_rate / 100), 3);
+        $total     = round($subtotal - $discount + $taxAmount, 3);
+
         $invoice = Invoice::create([
             'job_order_id' => $job->id,
             'customer_id'  => $job->customer_id,
-            'subtotal'     => $job->subtotal,
-            'discount'     => $job->discount,
-            'tax_amount'   => $job->tax_amount,
-            'total'        => $job->total,
+            'subtotal'     => $subtotal,
+            'discount'     => $discount,
+            'tax_amount'   => $taxAmount,
+            'total'        => $total,
             'amount_paid'  => 0,
             'status'       => 'draft',
             'issued_at'    => today(),
@@ -65,6 +74,55 @@ class InvoiceController extends Controller
         return redirect()
             ->route('invoices.show', $invoice)
             ->with('success', __('app.invoices.generated', ['number' => $invoice->invoice_number]));
+    }
+
+    public function update(Request $request, Invoice $invoice): RedirectResponse
+    {
+        $data = $request->validate([
+            'status'    => 'required|in:draft,sent,partial,paid,overdue',
+            'issued_at' => 'required|date',
+            'due_at'    => 'nullable|date',
+            'discount'  => 'nullable|numeric|min:0',
+            'notes'     => 'nullable|string',
+        ]);
+
+        // Recalculate total when discount changes
+        if (isset($data['discount']) && $invoice->jobOrder) {
+            $invoice->load('jobOrder.items');
+            $itemsSum  = $invoice->jobOrder->items->sum(fn ($i) => (float)$i->quantity * (float)$i->unit_price);
+            $subtotal  = round((float)$invoice->jobOrder->labour_cost + (float)$invoice->jobOrder->parts_cost + $itemsSum, 3);
+            $discount  = (float)$data['discount'];
+            $taxAmount = round(($subtotal - $discount) * ((float)$invoice->jobOrder->tax_rate / 100), 3);
+            $data['subtotal']   = $subtotal;
+            $data['tax_amount'] = $taxAmount;
+            $data['total']      = round($subtotal - $discount + $taxAmount, 3);
+        }
+
+        $invoice->update($data);
+
+        return back()->with('success', 'Invoice updated.');
+    }
+
+    public function destroy(Invoice $invoice): RedirectResponse
+    {
+        $invoice->payments()->delete();
+        $invoice->delete();
+
+        return redirect()->route('invoices.index')->with('success', 'Invoice deleted.');
+    }
+
+    public function pdf(Invoice $invoice)
+    {
+        $invoice->load(['customer', 'jobOrder.items', 'jobOrder.parts.part', 'payments.receivedBy']);
+
+        $pdf = Pdf::loadView('invoices.pdf', compact('invoice'))
+            ->setPaper('a4', 'portrait');
+
+        $filename = $invoice->invoice_number . '.pdf';
+
+        return request()->boolean('inline')
+            ? $pdf->stream($filename)
+            : $pdf->download($filename);
     }
 
     public function recordPayment(Request $request, Invoice $invoice): RedirectResponse

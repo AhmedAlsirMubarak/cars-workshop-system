@@ -1,8 +1,8 @@
-<x-layouts.app title="Payroll">
+<x-layouts.app title="{{ __('Payroll') }}">
     {{-- Header + month picker --}}
     <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
         <div>
-            <h2 class="text-xl font-bold text-gray-900">Payroll</h2>
+            <h2 class="text-xl font-bold text-gray-900">{{ __('Payroll') }}</h2>
             <p class="text-sm text-gray-500 mt-0.5">
                 {{ \Carbon\Carbon::createFromDate($year, $month, 1)->format('F Y') }}
             </p>
@@ -18,20 +18,20 @@
                 <option value="{{ $y }}" @selected($y == $year)>{{ $y }}</option>
                 @endfor
             </select>
-            <a href="{{ route('payroll.attendance.index') }}" class="btn-secondary">Attendance</a>
-            <a href="{{ route('payroll.advances.index') }}" class="btn-secondary">Advances</a>
-            <a href="{{ route('payroll.report') }}" class="btn-secondary">Report</a>
+            <a href="{{ route('payroll.attendance.index') }}" class="btn-secondary">{{ __('Attendance') }}</a>
+            <a href="{{ route('payroll.advances.index') }}" class="btn-secondary">{{ __('Advances') }}</a>
+            <a href="{{ route('payroll.report') }}" class="btn-secondary">{{ __('Report') }}</a>
         </form>
     </div>
 
     {{-- Summary cards --}}
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
         @foreach([
-            ['label' => 'Total Gross',      'value' => number_format($summary['total_gross'], 3).' OMR',  'color' => 'text-gray-900'],
-            ['label' => 'Total Deductions', 'value' => number_format($summary['total_deductions'], 3).' OMR', 'color' => 'text-red-500'],
-            ['label' => 'Total Net',        'value' => number_format($summary['total_net'], 3).' OMR',    'color' => 'text-orange-600'],
-            ['label' => 'Draft / Approved', 'value' => ($summary['count_draft'] + $summary['count_approved']), 'color' => 'text-gray-700'],
-            ['label' => 'Paid',             'value' => $summary['count_paid'],                            'color' => 'text-green-600'],
+            ['label' => __('Total Gross'),      'value' => number_format($summary['total_gross'], 3).' OMR',  'color' => 'text-gray-900'],
+            ['label' => __('Total Deductions'), 'value' => number_format($summary['total_deductions'], 3).' OMR', 'color' => 'text-red-500'],
+            ['label' => __('Total Net'),        'value' => number_format($summary['total_net'], 3).' OMR',    'color' => 'text-orange-600'],
+            ['label' => __('Draft / Approved'), 'value' => ($summary['count_draft'] + $summary['count_approved']), 'color' => 'text-gray-700'],
+            ['label' => __('Paid'),             'value' => $summary['count_paid'],                            'color' => 'text-green-600'],
         ] as $kpi)
         <div class="card p-4 sm:p-5">
             <p class="text-xs text-gray-400 mb-1">{{ $kpi['label'] }}</p>
@@ -51,18 +51,18 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="text-sm font-semibold text-amber-800">{{ $missingStaff->count() }} employees have no payslip yet</p>
-                    <p class="text-xs text-amber-600">Set working days and generate all at once</p>
+                    <p class="text-sm font-semibold text-amber-800">{{ $missingStaff->count() }} {{ __('employees have no payslip yet') }}</p>
+                    <p class="text-xs text-amber-600">{{ __('Set working days and generate all at once') }}</p>
                 </div>
             </div>
             <div class="flex items-center gap-2 shrink-0">
-                <input x-model="working_days" type="number" min="20" max="31" class="input w-20 text-sm" placeholder="Days">
+                <input x-model="working_days" type="number" min="20" max="31" class="input w-20 text-sm" placeholder="{{ __('Days') }}">
                 <form method="POST" action="{{ route('payroll.generate-all') }}">
                     @csrf
                     <input type="hidden" name="month" value="{{ $month }}">
                     <input type="hidden" name="year"  value="{{ $year }}">
                     <input type="hidden" name="working_days" :value="working_days">
-                    <button type="submit" class="btn-primary text-sm whitespace-nowrap">Generate All</button>
+                    <button type="submit" class="btn-primary text-sm whitespace-nowrap">{{ __('Generate All') }}</button>
                 </form>
             </div>
         </div>
@@ -72,12 +72,12 @@
     {{-- Payroll table --}}
     <div class="card overflow-hidden">
         <div class="card-header">
-            <h3 class="font-semibold text-gray-900">Payslips <span class="text-gray-400 font-normal">({{ $payrolls->count() }})</span></h3>
+            <h3 class="font-semibold text-gray-900">{{ __('Payslips') }} <span class="text-gray-400 font-normal">({{ $payrolls->count() }})</span></h3>
         </div>
         <div class="hidden sm:block overflow-x-auto">
             <table class="table">
                 <thead><tr>
-                    <th>Employee</th><th class="text-end">Basic</th><th class="text-end">Bonus</th><th class="text-end">Deductions</th><th class="text-end">Net</th><th>Method</th><th>Status</th><th></th>
+                    <th>{{ __('Employee') }}</th><th class="text-end">{{ __('Basic') }}</th><th class="text-end">{{ __('Bonus') }}</th><th class="text-end">{{ __('Deductions') }}</th><th class="text-end">{{ __('Net') }}</th><th>{{ __('Method') }}</th><th>{{ __('Status') }}</th><th></th>
                 </tr></thead>
                 <tbody>
                     @forelse($payrolls as $p)
@@ -107,22 +107,22 @@
                         </td>
                         <td>@include('components.status-badge', ['status' => $p->status])</td>
                         <td>
-                            <a href="{{ route('payroll.show', $p) }}" class="text-xs text-orange-500 hover:underline" onclick="event.stopPropagation()">View →</a>
+                            <a href="{{ route('payroll.show', $p) }}" class="text-xs text-orange-500 hover:underline" onclick="event.stopPropagation()">{{ __('View') }} →</a>
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="8" class="py-12 text-center text-sm text-gray-400">No payslips generated yet. Click "Generate All" above.</td></tr>
+                    <tr><td colspan="8" class="py-12 text-center text-sm text-gray-400">{{ __('No payslips generated yet. Click "Generate All" above.') }}</td></tr>
                     @endforelse
 
                     {{-- Missing staff rows --}}
                     @foreach($missingStaff as $s)
                     <tr class="opacity-50">
                         <td>
-                            <p class="font-medium text-gray-900">{{ $s->user->name }}</p>
+                            <p class="font-medium text-gray-900">{{ $s->display_name }}</p>
                             <p class="text-xs text-gray-400">{{ $s->employee_id }}</p>
                         </td>
                         <td class="text-end text-gray-500">{{ number_format($s->basic_salary, 3) }}</td>
-                        <td colspan="4"><span class="text-xs text-gray-400 italic">No payslip yet</span></td>
+                        <td colspan="4"><span class="text-xs text-gray-400 italic">{{ __('No payslip yet') }}</span></td>
                         <td></td>
                         <td>
                             <form method="POST" action="{{ route('payroll.generate') }}" x-data="{ days: 26 }">
@@ -131,7 +131,7 @@
                                 <input type="hidden" name="month" value="{{ $month }}">
                                 <input type="hidden" name="year" value="{{ $year }}">
                                 <input type="hidden" name="working_days" value="26">
-                                <button type="submit" class="text-xs bg-orange-100 hover:bg-orange-200 text-orange-700 px-3 py-1.5 rounded-lg transition">Generate</button>
+                                <button type="submit" class="text-xs bg-orange-100 hover:bg-orange-200 text-orange-700 px-3 py-1.5 rounded-lg transition">{{ __('Generate') }}</button>
                             </form>
                         </td>
                     </tr>
@@ -151,7 +151,7 @@
                     </div>
                     <p class="text-xs text-gray-400">{{ $p->staff?->employee_id }}</p>
                     @if($p->total_deductions > 0)
-                    <p class="text-xs text-red-500 mt-1">Deductions: -{{ number_format($p->total_deductions, 3) }} OMR</p>
+                    <p class="text-xs text-red-500 mt-1">{{ __('Deductions') }}: -{{ number_format($p->total_deductions, 3) }} OMR</p>
                     @endif
                 </div>
                 <div class="text-end shrink-0">
@@ -160,7 +160,7 @@
                 </div>
             </a>
             @empty
-            <p class="py-12 text-center text-sm text-gray-400">No payslips this month.</p>
+            <p class="py-12 text-center text-sm text-gray-400">{{ __('No payslips this month.') }}</p>
             @endforelse
         </div>
     </div>

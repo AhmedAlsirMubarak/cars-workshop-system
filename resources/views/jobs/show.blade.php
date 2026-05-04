@@ -1,4 +1,4 @@
-<x-layouts.app title="Job {{ $job->job_number }}">
+<x-layouts.app title="{{ __('Job') }} {{ $job->job_number }}">
 
     {{-- Header --}}
     <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
@@ -14,16 +14,22 @@
                     @include('components.status-badge', ['status' => $job->status])
                     @include('components.status-badge', ['status' => $job->priority])
                 </div>
-                <p class="text-sm text-gray-400 mt-0.5">Created {{ $job->created_at->format('d M Y H:i') }}</p>
+                <p class="text-sm text-gray-400 mt-0.5">{{ __('Created') }} {{ $job->created_at->format('d M Y H:i') }}</p>
             </div>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
+            <a href="{{ route('jobs.edit', $job) }}" class="btn-secondary btn-sm">{{ __('Edit') }}</a>
+            <button type="button" x-data
+                class="btn-secondary btn-sm text-red-500 hover:text-red-700 hover:border-red-300"
+                @click="$dispatch('open-confirm-delete', '{{ route('jobs.destroy', $job) }}')">
+                {{ __('Delete') }}
+            </button>
             @if($job->invoice)
-            <a href="{{ route('invoices.show', $job->invoice) }}" class="btn-secondary btn-sm">View Invoice</a>
+            <a href="{{ route('invoices.show', $job->invoice) }}" class="btn-secondary btn-sm">{{ __('View Invoice') }}</a>
             @else
             <form method="POST" action="{{ route('invoices.generate-from-job', $job) }}">
                 @csrf
-                <button type="submit" class="btn-primary btn-sm">Generate Invoice</button>
+                <button type="submit" class="btn-primary btn-sm">{{ __('Generate Invoice') }}</button>
             </form>
             @endif
         </div>
@@ -36,16 +42,16 @@
 
             {{-- Job Details --}}
             <div class="card p-5">
-                <h3 class="font-semibold text-gray-900 mb-4">Job Details</h3>
+                <h3 class="font-semibold text-gray-900 mb-4">{{ __('Job Details') }}</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     <div>
-                        <p class="text-xs text-gray-400 mb-0.5">Customer</p>
+                        <p class="text-xs text-gray-400 mb-0.5">{{ __('Customer') }}</p>
                         <a href="{{ route('customers.show', $job->customer) }}"
                             class="font-medium text-orange-500 hover:underline">{{ $job->customer?->name }}</a>
                         <p class="text-gray-500 text-xs mt-0.5">{{ $job->customer?->phone }}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 mb-0.5">Vehicle</p>
+                        <p class="text-xs text-gray-400 mb-0.5">{{ __('Vehicle') }}</p>
                         <a href="{{ route('vehicles.show', $job->vehicle) }}"
                             class="font-medium text-orange-500 hover:underline">
                             {{ $job->vehicle?->make }} {{ $job->vehicle?->model }}
@@ -53,30 +59,38 @@
                         <p class="text-xs text-gray-500 font-mono mt-0.5">{{ $job->vehicle?->plate_number }}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 mb-0.5">Assigned Technician</p>
-                        <p class="font-medium text-gray-900">{{ $job->staff?->user?->name ?? 'Unassigned' }}</p>
+                        <p class="text-xs text-gray-400 mb-0.5">{{ __('Assigned Staff') }}</p>
+                        @if($job->assignedStaff->isEmpty())
+                        <p class="font-medium text-gray-400">{{ __('Unassigned') }}</p>
+                        @else
+                        <div class="flex flex-wrap gap-1 mt-0.5">
+                            @foreach($job->assignedStaff as $s)
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-orange-50 text-orange-700 text-xs font-medium">{{ $s->display_name }}</span>
+                            @endforeach
+                        </div>
+                        @endif
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 mb-0.5">Promised Date</p>
+                        <p class="text-xs text-gray-400 mb-0.5">{{ __('Promised Date') }}</p>
                         <p class="font-medium text-gray-900">{{ $job->promised_at?->format('d M Y') ?? '—' }}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 mb-0.5">Mileage In</p>
+                        <p class="text-xs text-gray-400 mb-0.5">{{ __('Mileage In') }}</p>
                         <p class="font-medium text-gray-900">{{ $job->mileage_in ? number_format($job->mileage_in) . ' km' : '—' }}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 mb-0.5">Mileage Out</p>
+                        <p class="text-xs text-gray-400 mb-0.5">{{ __('Mileage Out') }}</p>
                         <p class="font-medium text-gray-900">{{ $job->mileage_out ? number_format($job->mileage_out) . ' km' : '—' }}</p>
                     </div>
                     @if($job->started_at)
                     <div>
-                        <p class="text-xs text-gray-400 mb-0.5">Started</p>
+                        <p class="text-xs text-gray-400 mb-0.5">{{ __('Started') }}</p>
                         <p class="font-medium text-gray-900">{{ $job->started_at->format('d M Y H:i') }}</p>
                     </div>
                     @endif
                     @if($job->completed_at)
                     <div>
-                        <p class="text-xs text-gray-400 mb-0.5">Completed</p>
+                        <p class="text-xs text-gray-400 mb-0.5">{{ __('Completed') }}</p>
                         <p class="font-medium text-gray-900">{{ $job->completed_at->format('d M Y H:i') }}</p>
                     </div>
                     @endif
@@ -85,25 +99,25 @@
                 <div class="mt-4 space-y-3">
                     @if($job->complaint)
                     <div>
-                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Customer Complaint</p>
+                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{{ __('Customer Complaint') }}</p>
                         <p class="text-sm text-gray-700 bg-gray-50 rounded-xl p-3">{{ $job->complaint }}</p>
                     </div>
                     @endif
                     @if($job->diagnosis)
                     <div>
-                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Diagnosis</p>
+                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{{ __('Diagnosis') }}</p>
                         <p class="text-sm text-gray-700 bg-gray-50 rounded-xl p-3">{{ $job->diagnosis }}</p>
                     </div>
                     @endif
                     @if($job->work_performed)
                     <div>
-                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Work Performed</p>
+                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{{ __('Work Performed') }}</p>
                         <p class="text-sm text-gray-700 bg-gray-50 rounded-xl p-3">{{ $job->work_performed }}</p>
                     </div>
                     @endif
                     @if($job->recommendations)
                     <div>
-                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Recommendations</p>
+                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{{ __('Recommendations') }}</p>
                         <p class="text-sm text-gray-700 bg-gray-50 rounded-xl p-3">{{ $job->recommendations }}</p>
                     </div>
                     @endif
@@ -114,11 +128,11 @@
             @if($job->items->isNotEmpty())
             <div class="card">
                 <div class="card-header">
-                    <h3 class="font-semibold text-gray-900">Service Items</h3>
+                    <h3 class="font-semibold text-gray-900">{{ __('Service Items') }}</h3>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="table">
-                        <thead><tr><th>Description</th><th>Type</th><th class="text-center">Qty</th><th class="text-end">Unit (OMR)</th><th class="text-end">Total (OMR)</th></tr></thead>
+                        <thead><tr><th>{{ __('Description') }}</th><th>{{ __('Type') }}</th><th class="text-center">{{ __('Qty') }}</th><th class="text-end">{{ __('Unit (OMR)') }}</th><th class="text-end">{{ __('Total (OMR)') }}</th></tr></thead>
                         <tbody>
                             @foreach($job->items as $item)
                             <tr>
@@ -138,18 +152,18 @@
             {{-- Parts Used --}}
             <div class="card">
                 <div class="card-header">
-                    <h3 class="font-semibold text-gray-900">Parts Used</h3>
+                    <h3 class="font-semibold text-gray-900">{{ __('Parts Used') }}</h3>
                     <button type="button" class="btn-secondary btn-sm"
                         x-data @click="$dispatch('open-modal', 'add-part')">
-                        + Add Part
+                        + {{ __('Add Part') }}
                     </button>
                 </div>
                 @if($job->parts->isEmpty())
-                <p class="px-5 py-8 text-center text-sm text-gray-400">No parts added yet.</p>
+                <p class="px-5 py-8 text-center text-sm text-gray-400">{{ __('No parts added yet.') }}</p>
                 @else
                 <div class="overflow-x-auto">
                     <table class="table">
-                        <thead><tr><th>Part</th><th>SKU</th><th class="text-center">Qty</th><th class="text-end">Unit (OMR)</th><th class="text-end">Total (OMR)</th></tr></thead>
+                        <thead><tr><th>{{ __('Part') }}</th><th>{{ __('SKU') }}</th><th class="text-center">{{ __('Qty') }}</th><th class="text-end">{{ __('Unit (OMR)') }}</th><th class="text-end">{{ __('Total (OMR)') }}</th></tr></thead>
                         <tbody>
                             @foreach($job->parts as $jp)
                             <tr>
@@ -172,70 +186,87 @@
 
             {{-- Update Status --}}
             <div class="card p-5">
-                <h3 class="font-semibold text-gray-900 mb-4">Update Job</h3>
+                <h3 class="font-semibold text-gray-900 mb-4">{{ __('Update Job') }}</h3>
                 <form method="POST" action="{{ route('jobs.update', $job) }}" class="space-y-3">
                     @csrf
                     @method('PUT')
 
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Status</label>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">{{ __('Status') }}</label>
                         <select name="status" class="input w-full text-sm">
-                            @foreach(['pending' => 'Pending', 'in_progress' => 'In Progress', 'waiting_parts' => 'Waiting Parts', 'completed' => 'Completed', 'cancelled' => 'Cancelled'] as $val => $lbl)
+                            @foreach(['pending' => __('Pending'), 'in_progress' => __('In Progress'), 'waiting_parts' => __('Waiting Parts'), 'completed' => __('Completed'), 'cancelled' => __('Cancelled')] as $val => $lbl)
                             <option value="{{ $val }}" @selected($job->status === $val)>{{ $lbl }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Priority</label>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">{{ __('Priority') }}</label>
                         <select name="priority" class="input w-full text-sm">
-                            @foreach(['low' => 'Low', 'normal' => 'Normal', 'high' => 'High', 'urgent' => 'Urgent'] as $val => $lbl)
+                            @foreach(['low' => __('Low'), 'normal' => __('Normal'), 'high' => __('High'), 'urgent' => __('Urgent')] as $val => $lbl)
                             <option value="{{ $val }}" @selected($job->priority === $val)>{{ $lbl }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Work Performed</label>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">{{ __('Work Performed') }}</label>
                         <textarea name="work_performed" rows="3" class="input w-full text-sm"
-                            placeholder="What was done…">{{ $job->work_performed }}</textarea>
+                            placeholder="{{ __('What was done…') }}">{{ $job->work_performed }}</textarea>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Recommendations</label>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">{{ __('Recommendations') }}</label>
                         <textarea name="recommendations" rows="2" class="input w-full text-sm"
-                            placeholder="Future recommendations…">{{ $job->recommendations }}</textarea>
+                            placeholder="{{ __('Future recommendations…') }}">{{ $job->recommendations }}</textarea>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Mileage Out (km)</label>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">{{ __('Mileage Out (km)') }}</label>
                         <input type="number" name="mileage_out" value="{{ $job->mileage_out }}" min="0" class="input w-full text-sm">
                     </div>
 
-                    <button type="submit" class="btn-primary w-full">Save Changes</button>
+                    <button type="submit" class="btn-primary w-full">{{ __('Save Changes') }}</button>
                 </form>
             </div>
 
             {{-- Totals --}}
             <div class="card p-5">
-                <h3 class="font-semibold text-gray-900 mb-3">Cost Summary</h3>
+                <h3 class="font-semibold text-gray-900 mb-3">{{ __('Cost Summary') }}</h3>
+                @php
+                    $jobItemsTotal = $job->items->sum(fn ($i) => (float)$i->quantity * (float)$i->unit_price);
+                @endphp
                 <div class="space-y-2 text-sm">
+                    @if($job->labour_cost > 0)
                     <div class="flex justify-between">
-                        <span class="text-gray-500">Labour</span>
+                        <span class="text-gray-500">{{ __('Labour') }}</span>
                         <span class="font-medium text-gray-900">{{ number_format($job->labour_cost, 3) }} OMR</span>
                     </div>
+                    @endif
+                    @if($jobItemsTotal > 0)
                     <div class="flex justify-between">
-                        <span class="text-gray-500">Parts</span>
+                        <span class="text-gray-500">{{ __('Services') }}</span>
+                        <span class="font-medium text-gray-900">{{ number_format($jobItemsTotal, 3) }} OMR</span>
+                    </div>
+                    @endif
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">{{ __('Parts') }}</span>
                         <span class="font-medium text-gray-900">{{ number_format($job->parts_cost, 3) }} OMR</span>
                     </div>
                     @if($job->discount > 0)
                     <div class="flex justify-between text-red-600">
-                        <span>Discount</span>
+                        <span>{{ __('Discount') }}</span>
                         <span>-{{ number_format($job->discount, 3) }} OMR</span>
                     </div>
                     @endif
+                    @if($job->tax_rate > 0)
+                    <div class="flex justify-between text-gray-600">
+                        <span>{{ __('Tax') }} ({{ number_format($job->tax_rate, 1) }}%)</span>
+                        <span>{{ number_format($job->tax_amount, 3) }} OMR</span>
+                    </div>
+                    @endif
                     <div class="border-t border-gray-100 pt-2 flex justify-between font-bold text-gray-900">
-                        <span>Total</span>
+                        <span>{{ __('Total') }}</span>
                         <span>{{ number_format($job->total, 3) }} OMR</span>
                     </div>
                 </div>
@@ -244,13 +275,13 @@
             {{-- Invoice status --}}
             @if($job->invoice)
             <div class="card p-5">
-                <h3 class="font-semibold text-gray-900 mb-3">Invoice</h3>
+                <h3 class="font-semibold text-gray-900 mb-3">{{ __('Invoice') }}</h3>
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="font-mono text-sm text-orange-500">{{ $job->invoice->invoice_number }}</p>
                         @include('components.status-badge', ['status' => $job->invoice->status])
                     </div>
-                    <a href="{{ route('invoices.show', $job->invoice) }}" class="btn-secondary btn-sm">View</a>
+                    <a href="{{ route('invoices.show', $job->invoice) }}" class="btn-secondary btn-sm">{{ __('View') }}</a>
                 </div>
             </div>
             @endif
@@ -270,7 +301,7 @@
 
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" @click.stop>
             <div class="flex items-center justify-between mb-5">
-                <h3 class="font-semibold text-gray-900">Add Part to Job</h3>
+                <h3 class="font-semibold text-gray-900">{{ __('Add Part to Job') }}</h3>
                 <button @click="open = false" class="text-gray-400 hover:text-gray-600 transition">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
@@ -282,12 +313,12 @@
                 @csrf
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Part <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Part') }} <span class="text-red-500">*</span></label>
                     <select name="part_id" required class="input w-full">
-                        <option value="">Select part…</option>
+                        <option value="">{{ __('Select part…') }}</option>
                         @foreach($parts as $p)
                         <option value="{{ $p->id }}" data-price="{{ $p->selling_price }}">
-                            {{ $p->name }} — {{ $p->sku }} ({{ $p->quantity_in_stock }} in stock)
+                            {{ $p->name }} — {{ $p->sku }} ({{ $p->quantity_in_stock }} {{ __('in stock') }})
                         </option>
                         @endforeach
                     </select>
@@ -295,18 +326,18 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Quantity <span class="text-red-500">*</span></label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Quantity') }} <span class="text-red-500">*</span></label>
                         <input type="number" name="quantity" required min="0.01" step="0.01" value="1" class="input w-full">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Unit Price (OMR) <span class="text-red-500">*</span></label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Unit Price (OMR)') }} <span class="text-red-500">*</span></label>
                         <input type="number" name="unit_price" id="partUnitPrice" required min="0" step="0.001" value="0.000" class="input w-full">
                     </div>
                 </div>
 
                 <div class="flex gap-3 pt-2">
-                    <button type="submit" class="btn-primary flex-1">Add Part</button>
-                    <button type="button" @click="open = false" class="btn-secondary flex-1">Cancel</button>
+                    <button type="submit" class="btn-primary flex-1">{{ __('Add Part') }}</button>
+                    <button type="button" @click="open = false" class="btn-secondary flex-1">{{ __('Cancel') }}</button>
                 </div>
             </form>
         </div>

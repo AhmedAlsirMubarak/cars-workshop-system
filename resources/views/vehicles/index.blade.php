@@ -1,13 +1,13 @@
-<x-layouts.app title="Vehicles">
+<x-layouts.app title="{{ __('Vehicles') }}">
 
     {{-- Search --}}
     <form method="GET" action="{{ route('vehicles.index') }}" class="flex flex-wrap items-center gap-3 mb-6">
         <div x-data="searchBox()">
             <input type="text" name="search" x-model="query" @input="debounce()"
-                placeholder="Search plate, make, model or customer…" class="input w-72"
+                placeholder="{{ __('Search plate, make, model or customer…') }}" class="input w-72"
                 value="{{ request('search') }}">
         </div>
-        <a href="{{ route('vehicles.index') }}" class="text-xs text-gray-400 hover:text-gray-600">Clear</a>
+        <a href="{{ route('vehicles.index') }}" class="text-xs text-gray-400 hover:text-gray-600">{{ __('Clear') }}</a>
     </form>
 
     {{-- Table --}}
@@ -16,12 +16,12 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Plate #</th>
-                        <th>Make / Model</th>
-                        <th class="text-center">Year</th>
-                        <th>Color</th>
-                        <th>Customer</th>
-                        <th>Mileage</th>
+                        <th>{{ __('Plate #') }}</th>
+                        <th>{{ __('Make / Model') }}</th>
+                        <th class="text-center">{{ __('Year') }}</th>
+                        <th>{{ __('Color') }}</th>
+                        <th>{{ __('Customer') }}</th>
+                        <th>{{ __('Mileage') }}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -49,12 +49,12 @@
                         </td>
                         <td class="text-sm text-gray-500">{{ $v->mileage ? number_format($v->mileage) . ' km' : '—' }}</td>
                         <td>
-                            <a href="{{ route('vehicles.show', $v) }}" class="text-xs text-orange-500 hover:underline" onclick="event.stopPropagation()">View →</a>
+                            <a href="{{ route('vehicles.show', $v) }}" class="text-xs text-orange-500 hover:underline" onclick="event.stopPropagation()">{{ __('View') }} →</a>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="py-12 text-center text-sm text-gray-400">No vehicles found.</td>
+                        <td colspan="7" class="py-12 text-center text-sm text-gray-400">{{ __('No vehicles found.') }}</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -76,7 +76,7 @@
                 </div>
             </a>
             @empty
-            <p class="py-12 text-center text-sm text-gray-400">No vehicles found.</p>
+            <p class="py-12 text-center text-sm text-gray-400">{{ __('No vehicles found.') }}</p>
             @endforelse
         </div>
     </div>

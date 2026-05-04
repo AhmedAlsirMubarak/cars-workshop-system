@@ -28,7 +28,7 @@ class DashboardController extends Controller
                     ->count(),
             ],
 
-            'recent_jobs' => JobOrder::with(['customer', 'vehicle', 'staff.user'])
+            'recent_jobs' => JobOrder::with(['customer', 'vehicle', 'assignedStaff'])
                 ->latest()
                 ->limit(8)
                 ->get(),

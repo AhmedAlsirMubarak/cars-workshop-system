@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 class JobOrder extends Model
 {
@@ -78,6 +80,11 @@ class JobOrder extends Model
         return $this->belongsTo(Staff::class);
     }
 
+    public function assignedStaff(): BelongsToMany
+    {
+        return $this->belongsToMany(Staff::class, 'job_order_staff');
+    }
+
     public function appointment(): BelongsTo
     {
         return $this->belongsTo(Appointment::class);
@@ -100,7 +107,11 @@ class JobOrder extends Model
 
     public function getSubtotalAttribute(): float
     {
-        return (float) ($this->labour_cost + $this->parts_cost);
+        $itemsSum = $this->relationLoaded('items')
+            ? $this->items->sum(fn ($i) => (float) $i->quantity * (float) $i->unit_price)
+            : (float) ($this->items()->sum(DB::raw('quantity * unit_price')) ?? 0);
+
+        return round((float) $this->labour_cost + (float) $this->parts_cost + $itemsSum, 3);
     }
 
     public function getTaxAmountAttribute(): float

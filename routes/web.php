@@ -11,7 +11,11 @@ use App\Http\Controllers\{
     InvoiceController,
     StaffController,
     ProfileController,
+    LanguageController,
 };
+
+// ── Language switcher (no auth required) ─────────────────────
+Route::get('lang/{locale}', [LanguageController::class, 'switch'])->name('lang.switch');
 
 // ── Standard Laravel auth (Breeze Blade) ─────────────────────
 require __DIR__ . '/auth.php';
@@ -44,9 +48,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('inventory/{part}',  [InventoryController::class, 'destroy'])->name('inventory.destroy');
 
     Route::get('invoices',                    [InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('invoices/{invoice}/pdf',      [InvoiceController::class, 'pdf'])->name('invoices.pdf');
     Route::get('invoices/{invoice}',          [InvoiceController::class, 'show'])->name('invoices.show');
     Route::post('jobs/{job}/invoice',         [InvoiceController::class, 'generateFromJob'])->name('invoices.generate-from-job');
     Route::post('invoices/{invoice}/payment', [InvoiceController::class, 'recordPayment'])->name('invoices.record-payment');
+    Route::put('invoices/{invoice}',          [InvoiceController::class, 'update'])->name('invoices.update');
+    Route::delete('invoices/{invoice}',       [InvoiceController::class, 'destroy'])->name('invoices.destroy');
 
     Route::middleware('role:admin|manager')->group(function () {
         Route::resource('staff', StaffController::class);

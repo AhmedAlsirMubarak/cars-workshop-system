@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Workshop Pro' }} — Tsunami Garage</title>
+    <title>{{ $title ?? __('Workshop Pro') }} — Tsunami Garage</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -24,7 +24,7 @@
     {{-- ── Sidebar ── --}}
     <aside :class="[
         'fixed inset-y-0 start-0 z-30 flex flex-col bg-gray-900 transition-all duration-300 ease-in-out',
-        'lg:static lg:translate-x-0',
+        'lg:static lg:!translate-x-0',
         mobileOpen ? 'translate-x-0 rtl:-translate-x-0 w-72' : '-translate-x-full rtl:translate-x-full w-72',
         open ? 'lg:w-64' : 'lg:w-16',
     ]">
@@ -48,18 +48,37 @@
         <nav class="flex-1 py-3 overflow-y-auto space-y-0.5">
             @php $current = request()->routeIs(...array_keys($navItems ?? [])) @endphp
 
-            @include('layouts.nav-item', ['route' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'home'])
-            @include('layouts.nav-item', ['route' => 'appointments.*', 'label' => 'Appointments', 'icon' => 'calendar'])
-            @include('layouts.nav-item', ['route' => 'jobs.*', 'label' => 'Job Orders', 'icon' => 'wrench', 'badge' => $openJobCount ?? 0])
-            @include('layouts.nav-item', ['route' => 'customers.*', 'label' => 'Customers', 'icon' => 'users'])
-            @include('layouts.nav-item', ['route' => 'vehicles.*', 'label' => 'Vehicles', 'icon' => 'truck'])
-            @include('layouts.nav-item', ['route' => 'inventory.*', 'label' => 'Inventory', 'icon' => 'box', 'badge' => $lowStockCount ?? 0, 'badge_color' => 'amber'])
-            @include('layouts.nav-item', ['route' => 'invoices.*', 'label' => 'Invoices', 'icon' => 'receipt'])
-            @include('layouts.nav-item', ['route' => 'payroll.*', 'label' => 'Payroll', 'icon' => 'money'])
+            @include('layouts.nav-item', ['route' => 'dashboard', 'label' => __('Dashboard'), 'icon' => 'home'])
+            @include('layouts.nav-item', ['route' => 'appointments.*', 'label' => __('Appointments'), 'icon' => 'calendar'])
+            @include('layouts.nav-item', ['route' => 'jobs.*', 'label' => __('Job Orders'), 'icon' => 'wrench', 'badge' => $openJobCount ?? 0])
+            @include('layouts.nav-item', ['route' => 'customers.*', 'label' => __('Customers'), 'icon' => 'users'])
+            @include('layouts.nav-item', ['route' => 'vehicles.*', 'label' => __('Vehicles'), 'icon' => 'truck'])
+            @include('layouts.nav-item', ['route' => 'inventory.*', 'label' => __('Inventory'), 'icon' => 'box', 'badge' => $lowStockCount ?? 0, 'badge_color' => 'amber'])
+            @include('layouts.nav-item', ['route' => 'invoices.*', 'label' => __('Invoices'), 'icon' => 'receipt'])
+            @include('layouts.nav-item', ['route' => 'payroll.*', 'label' => __('Payroll'), 'icon' => 'money'])
             @can('manage-staff')
-            @include('layouts.nav-item', ['route' => 'staff.*', 'label' => 'Staff', 'icon' => 'staff'])
+            @include('layouts.nav-item', ['route' => 'staff.*', 'label' => __('Staff'), 'icon' => 'staff'])
             @endcan
         </nav>
+
+        {{-- Language switcher --}}
+        <div class="px-3 pb-2 shrink-0">
+            <div :class="open ? 'justify-start' : 'lg:justify-center'"
+                class="flex items-center gap-1 rounded-lg overflow-hidden border border-gray-700">
+                <a href="{{ route('lang.switch', 'en') }}"
+                    class="flex-1 text-center py-1.5 text-xs font-semibold transition
+                        {{ app()->getLocale() === 'en' ? 'bg-orange-500 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-700' }}">
+                    <span :class="open ? '' : 'lg:hidden'">English</span>
+                    <span :class="open ? 'hidden' : 'lg:inline'" class="hidden">EN</span>
+                </a>
+                <a href="{{ route('lang.switch', 'ar') }}"
+                    class="flex-1 text-center py-1.5 text-xs font-semibold transition
+                        {{ app()->getLocale() === 'ar' ? 'bg-orange-500 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-700' }}">
+                    <span :class="open ? '' : 'lg:hidden'">عربي</span>
+                    <span :class="open ? 'hidden' : 'lg:inline'" class="hidden">AR</span>
+                </a>
+            </div>
+        </div>
 
         {{-- User + collapse --}}
         <div class="border-t border-gray-800 p-3 space-y-1 shrink-0">
@@ -78,7 +97,7 @@
                 <svg :class="open ? '' : 'rotate-180'" class="w-4 h-4 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
                 </svg>
-                <span :class="open ? '' : 'lg:hidden'">Collapse</span>
+                <span :class="open ? '' : 'lg:hidden'">{{ __('Collapse') }}</span>
             </button>
         </div>
     </aside>
@@ -95,7 +114,7 @@
             </button>
 
             <h1 class="text-sm sm:text-base font-semibold text-gray-900 truncate">
-                {{ $title ?? 'Dashboard' }}
+                {{ $title ?? __('Dashboard') }}
             </h1>
 
             <div class="flex-1"></div>
@@ -107,7 +126,7 @@
                 <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                 </svg>
-                {{ $lowStockCount }} low stock
+                {{ $lowStockCount }} {{ __('low stock') }}
             </a>
             @endif
 
@@ -132,13 +151,13 @@
                     </div>
                     <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
                         <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                        Profile
+                        {{ __('Profile') }}
                     </a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="flex items-center gap-2.5 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                            Sign out
+                            {{ __('Sign out') }}
                         </button>
                     </form>
                 </div>
@@ -186,13 +205,13 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="font-semibold text-gray-900">Confirm Delete</h3>
-                    <p class="text-sm text-gray-500">This action cannot be undone.</p>
+                    <h3 class="font-semibold text-gray-900">{{ __('Confirm Delete') }}</h3>
+                    <p class="text-sm text-gray-500">{{ __('This action cannot be undone.') }}</p>
                 </div>
             </div>
             <div class="flex gap-3">
-                <button @click="confirm()" class="btn-danger flex-1">Delete</button>
-                <button @click="hide()" class="btn-secondary flex-1">Cancel</button>
+                <button @click="confirm()" class="btn-danger flex-1">{{ __('Delete') }}</button>
+                <button @click="hide()" class="btn-secondary flex-1">{{ __('Cancel') }}</button>
             </div>
         </div>
     </div>

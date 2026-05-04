@@ -16,7 +16,8 @@
       "Bash(composer check-platform-reqs *)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5174/)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost/car-workshop/public/login)",
-      "Bash(curl -s -c /tmp/j4.txt -b /tmp/j4.txt -L http://localhost/car-workshop/public/payroll -o /dev/null -w \"%{http_code}\")"
+      "Bash(curl -s -c /tmp/j4.txt -b /tmp/j4.txt -L http://localhost/car-workshop/public/payroll -o /dev/null -w \"%{http_code}\")",
+      "Bash(composer require *)"
     ],
     "additionalDirectories": [
       "c:\\laragon\\bin\\apache\\httpd-2.4.66-260107-Win64-VS18\\conf"

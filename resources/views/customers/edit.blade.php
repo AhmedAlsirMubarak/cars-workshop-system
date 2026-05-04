@@ -1,4 +1,4 @@
-<x-layouts.app title="Edit Customer">
+<x-layouts.app title="{{ __('Edit Customer') }}">
 
     <div class="mb-6 flex items-center gap-3">
         <a href="{{ route('customers.show', $customer) }}" class="text-gray-400 hover:text-gray-600 transition">
@@ -6,7 +6,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
             </svg>
         </a>
-        <h2 class="text-lg font-semibold text-gray-900">Edit Customer — {{ $customer->name }}</h2>
+        <h2 class="text-lg font-semibold text-gray-900">{{ __('Edit Customer') }} — {{ $customer->name }}</h2>
     </div>
 
     <div class="max-w-2xl">
@@ -26,62 +26,62 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                     <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name <span class="text-red-500">*</span></label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Full Name') }} <span class="text-red-500">*</span></label>
                         <input type="text" name="name" value="{{ old('name', $customer->name) }}" required
                             class="input w-full @error('name') border-red-400 @enderror">
                         @error('name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone <span class="text-red-500">*</span></label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Phone') }} <span class="text-red-500">*</span></label>
                         <input type="text" name="phone" value="{{ old('phone', $customer->phone) }}" required
                             class="input w-full @error('phone') border-red-400 @enderror">
                         @error('phone')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Alternate Phone</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Alternate Phone') }}</label>
                         <input type="text" name="phone_alt" value="{{ old('phone_alt', $customer->phone_alt) }}"
                             class="input w-full">
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Email') }}</label>
                         <input type="email" name="email" value="{{ old('email', $customer->email) }}"
                             class="input w-full @error('email') border-red-400 @enderror">
                         @error('email')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('City') }}</label>
                         <input type="text" name="city" value="{{ old('city', $customer->city) }}"
                             class="input w-full">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Status') }}</label>
                         <select name="status" class="input w-full">
-                            <option value="active"   @selected(old('status', $customer->status) === 'active')>Active</option>
-                            <option value="inactive" @selected(old('status', $customer->status) === 'inactive')>Inactive</option>
+                            <option value="active"   @selected(old('status', $customer->status) === 'active')>{{ __('Active') }}</option>
+                            <option value="inactive" @selected(old('status', $customer->status) === 'inactive')>{{ __('Inactive') }}</option>
                         </select>
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Address') }}</label>
                         <input type="text" name="address" value="{{ old('address', $customer->address) }}"
                             class="input w-full">
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Notes') }}</label>
                         <textarea name="notes" rows="3" class="input w-full">{{ old('notes', $customer->notes) }}</textarea>
                     </div>
 
                 </div>
 
                 <div class="mt-6 flex items-center gap-3">
-                    <button type="submit" class="btn-primary">Save Changes</button>
-                    <a href="{{ route('customers.show', $customer) }}" class="btn-secondary">Cancel</a>
+                    <button type="submit" class="btn-primary">{{ __('Save Changes') }}</button>
+                    <a href="{{ route('customers.show', $customer) }}" class="btn-secondary">{{ __('Cancel') }}</a>
                 </div>
             </form>
         </div>

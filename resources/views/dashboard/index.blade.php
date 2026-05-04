@@ -1,27 +1,27 @@
-<x-layouts.app title="Dashboard">
+<x-layouts.app title="{{ __('Dashboard') }}">
 
     {{-- Greeting --}}
     <div class="mb-6">
         <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
             @php
                 $hour = now()->hour;
-                $greeting = $hour < 12 ? 'Good morning' : ($hour < 17 ? 'Good afternoon' : 'Good evening');
+                $greeting = $hour < 12 ? __('Good morning') : ($hour < 17 ? __('Good afternoon') : __('Good evening'));
             @endphp
             {{ $greeting }}, {{ explode(' ', auth()->user()->name)[0] }} 👋
         </h2>
         <p class="text-sm text-gray-500 mt-0.5">
-            {{ now()->format('l, d F Y') }} · Here's what's happening at the workshop today.
+            {{ now()->format('l, d F Y') }} · {{ __("Here's what's happening at the workshop today.") }}
         </p>
     </div>
 
     {{-- KPI cards --}}
     <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
         @foreach([
-            ['label' => 'Open Jobs',        'value' => $stats['open_jobs'],          'color' => 'blue',   'href' => route('jobs.index', ['status' => 'in_progress'])],
-            ['label' => 'Jobs Today',        'value' => $stats['jobs_today'],         'color' => 'purple', 'href' => route('jobs.index')],
-            ['label' => 'Revenue This Month','value' => number_format($stats['revenue_month'], 3).' OMR', 'color' => 'green',  'href' => route('invoices.index', ['status' => 'paid'])],
-            ['label' => 'Appointments Today','value' => $stats['appointments_today'], 'color' => 'orange', 'href' => route('appointments.index')],
-            ['label' => 'Low Stock Parts',   'value' => $stats['low_stock_parts'],    'color' => $stats['low_stock_parts'] > 0 ? 'red' : 'gray', 'href' => route('inventory.index', ['low_stock' => 1])],
+            ['label' => __('Open Jobs'),        'value' => $stats['open_jobs'],          'color' => 'blue',   'href' => route('jobs.index', ['status' => 'in_progress'])],
+            ['label' => __('Jobs Today'),        'value' => $stats['jobs_today'],         'color' => 'purple', 'href' => route('jobs.index')],
+            ['label' => __('Revenue This Month'),'value' => number_format($stats['revenue_month'], 3).' OMR', 'color' => 'green',  'href' => route('invoices.index', ['status' => 'paid'])],
+            ['label' => __('Appointments Today'),'value' => $stats['appointments_today'], 'color' => 'orange', 'href' => route('appointments.index')],
+            ['label' => __('Low Stock Parts'),   'value' => $stats['low_stock_parts'],    'color' => $stats['low_stock_parts'] > 0 ? 'red' : 'gray', 'href' => route('inventory.index', ['low_stock' => 1])],
         ] as $kpi)
         @php
             $colors = [
@@ -54,15 +54,15 @@
         {{-- Recent job orders --}}
         <div class="xl:col-span-2 card flex flex-col">
             <div class="card-header">
-                <h2 class="font-semibold text-gray-900">Recent Job Orders</h2>
-                <a href="{{ route('jobs.create') }}" class="btn-primary btn-sm">+ New Job</a>
+                <h2 class="font-semibold text-gray-900">{{ __('Recent Job Orders') }}</h2>
+                <a href="{{ route('jobs.create') }}" class="btn-primary btn-sm">+ {{ __('New Job') }}</a>
             </div>
 
             {{-- Desktop table --}}
             <div class="hidden sm:block overflow-x-auto">
                 <table class="table">
                     <thead><tr>
-                        <th>Job #</th><th>Customer</th><th>Vehicle</th><th>Status</th><th>Technician</th><th class="text-end">Total</th>
+                        <th>{{ __('Job #') }}</th><th>{{ __('Customer') }}</th><th>{{ __('Vehicle') }}</th><th>{{ __('Status') }}</th><th>{{ __('Technician') }}</th><th class="text-end">{{ __('Total') }}</th>
                     </tr></thead>
                     <tbody>
                         @forelse($recent_jobs as $job)
@@ -71,12 +71,17 @@
                             <td class="font-medium text-gray-900 max-w-[130px] truncate">{{ $job->customer?->name }}</td>
                             <td class="text-gray-500 text-xs">{{ $job->vehicle?->make }} {{ $job->vehicle?->model }}<br><span class="font-mono">{{ $job->vehicle?->plate_number }}</span></td>
                             <td>@include('components.status-badge', ['status' => $job->status])</td>
-                            <td class="text-gray-500 text-xs">{{ $job->staff?->user?->name ?? '—' }}</td>
+                            <td class="text-gray-500 text-xs">
+                                @if($job->assignedStaff->isNotEmpty())
+                                {{ $job->assignedStaff->first()->display_name }}{{ $job->assignedStaff->count() > 1 ? ' +'.($job->assignedStaff->count()-1) : '' }}
+                                @else —
+                                @endif
+                            </td>
                             <td class="text-end font-bold text-gray-900 text-xs">{{ number_format($job->total, 3) }} OMR</td>
                         </tr>
                         @empty
                         <tr><td colspan="6" class="py-12 text-center text-sm text-gray-400">
-                            No job orders yet. <a href="{{ route('jobs.create') }}" class="text-[#FEE103] hover:underline">Create one →</a>
+                            {{ __('No job orders yet.') }} <a href="{{ route('jobs.create') }}" class="text-[#FEE103] hover:underline">{{ __('Create one') }} →</a>
                         </td></tr>
                         @endforelse
                     </tbody>
@@ -101,12 +106,12 @@
                     </div>
                 </a>
                 @empty
-                <p class="px-4 py-10 text-center text-sm text-gray-400">No job orders yet.</p>
+                <p class="px-4 py-10 text-center text-sm text-gray-400">{{ __('No job orders yet.') }}</p>
                 @endforelse
             </div>
 
             <div class="px-5 py-3 border-t border-gray-50">
-                <a href="{{ route('jobs.index') }}" class="text-xs text-orange-500 hover:text-orange-600 font-medium">View all job orders →</a>
+                <a href="{{ route('jobs.index') }}" class="text-xs text-orange-500 hover:text-orange-600 font-medium">{{ __('View all job orders') }} →</a>
             </div>
         </div>
 
@@ -116,8 +121,8 @@
             {{-- Upcoming appointments --}}
             <div class="card">
                 <div class="card-header">
-                    <h2 class="font-semibold text-gray-900 text-sm sm:text-base">Upcoming Today</h2>
-                    <a href="{{ route('appointments.index') }}" class="text-xs text-orange-500 hover:underline">View all</a>
+                    <h2 class="font-semibold text-gray-900 text-sm sm:text-base">{{ __('Upcoming Today') }}</h2>
+                    <a href="{{ route('appointments.index') }}" class="text-xs text-orange-500 hover:underline">{{ __('View all') }}</a>
                 </div>
                 <div class="divide-y divide-gray-50">
                     @forelse($upcoming_appointments as $apt)
@@ -126,7 +131,7 @@
                             <div class="min-w-0 flex-1">
                                 <p class="text-sm font-medium text-gray-900 truncate">{{ $apt->customer?->name }}</p>
                                 <p class="text-xs text-gray-500 truncate mt-0.5">{{ $apt->vehicle?->make }} {{ $apt->vehicle?->model }} · <span class="capitalize">{{ $apt->type }}</span></p>
-                                <p class="text-xs text-gray-400 mt-0.5">{{ $apt->staff?->user?->name ?? 'Unassigned' }}</p>
+                                <p class="text-xs text-gray-400 mt-0.5">{{ $apt->staff?->user?->name ?? __('Unassigned') }}</p>
                             </div>
                             <div class="text-end shrink-0">
                                 <p class="text-sm font-bold text-[#FEE103]">{{ $apt->scheduled_at->format('H:i') }}</p>
@@ -135,23 +140,23 @@
                         </div>
                     </div>
                     @empty
-                    <p class="px-5 py-10 text-center text-sm text-gray-400">No appointments today.</p>
+                    <p class="px-5 py-10 text-center text-sm text-gray-400">{{ __('No appointments today.') }}</p>
                     @endforelse
                 </div>
                 <div class="px-5 py-3 border-t border-gray-50">
-                    <a href="{{ route('appointments.index') }}" class="text-xs text-[#FEE103] hover:text-[#FEE103]/80 font-medium">+ Schedule appointment →</a>
+                    <a href="{{ route('appointments.index') }}" class="text-xs text-[#FEE103] hover:text-[#FEE103]/80 font-medium">+ {{ __('Schedule appointment') }} →</a>
                 </div>
             </div>
 
             {{-- Quick actions --}}
             <div class="card p-4 sm:p-6">
-                <h2 class="font-semibold text-gray-900 text-sm sm:text-base mb-4">Quick Actions</h2>
+                <h2 class="font-semibold text-gray-900 text-sm sm:text-base mb-4">{{ __('Quick Actions') }}</h2>
                 <div class="grid grid-cols-2 gap-2 sm:gap-3">
                     @foreach([
-                        ['href' => route('jobs.create'),         'label' => 'New Job Order',   'color' => 'orange'],
-                        ['href' => route('customers.create'),    'label' => 'Add Customer',    'color' => 'blue'],
-                        ['href' => route('appointments.index'),  'label' => 'Appointments',    'color' => 'teal'],
-                        ['href' => route('inventory.index'),     'label' => 'Inventory',       'color' => 'amber'],
+                        ['href' => route('jobs.create'),         'label' => __('New Job Order'),   'color' => 'orange'],
+                        ['href' => route('customers.create'),    'label' => __('Add Customer'),    'color' => 'blue'],
+                        ['href' => route('appointments.index'),  'label' => __('Appointments'),    'color' => 'teal'],
+                        ['href' => route('inventory.index'),     'label' => __('Inventory'),       'color' => 'amber'],
                     ] as $action)
                     @php
                         $qColors = [

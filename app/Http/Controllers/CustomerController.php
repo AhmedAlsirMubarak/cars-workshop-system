@@ -53,7 +53,7 @@ class CustomerController extends Controller
         $customer->load([
             'vehicles',
             'jobOrders.vehicle',
-            'jobOrders.staff.user',
+            'jobOrders.assignedStaff',
             'invoices',
         ]);
 

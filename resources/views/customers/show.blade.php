@@ -10,12 +10,12 @@
             </a>
             <div>
                 <h2 class="text-lg font-semibold text-gray-900">{{ $customer->name }}</h2>
-                <p class="text-sm text-gray-400 mt-0.5">Customer since {{ $customer->created_at->format('d M Y') }}</p>
+                <p class="text-sm text-gray-400 mt-0.5">{{ __('Customer since') }} {{ $customer->created_at->format('d M Y') }}</p>
             </div>
         </div>
         <div class="flex items-center gap-2">
-            <a href="{{ route('vehicles.create', ['customer' => $customer->id]) }}" class="btn-secondary btn-sm">+ Add Vehicle</a>
-            <a href="{{ route('customers.edit', $customer) }}" class="btn-primary btn-sm">Edit</a>
+            <a href="{{ route('vehicles.create', ['customer' => $customer->id]) }}" class="btn-secondary btn-sm">+ {{ __('Add Vehicle') }}</a>
+            <a href="{{ route('customers.edit', $customer) }}" class="btn-primary btn-sm">{{ __('Edit') }}</a>
         </div>
     </div>
 
@@ -27,42 +27,42 @@
             {{-- Profile card --}}
             <div class="card p-5 space-y-3">
                 <div class="flex items-center justify-between">
-                    <h3 class="font-semibold text-gray-900 text-sm">Customer Info</h3>
+                    <h3 class="font-semibold text-gray-900 text-sm">{{ __('Customer Info') }}</h3>
                     @include('components.status-badge', ['status' => $customer->status])
                 </div>
                 <div class="space-y-2 text-sm">
                     <div class="flex gap-2">
-                        <span class="text-gray-400 w-20 shrink-0">Phone</span>
+                        <span class="text-gray-400 w-20 shrink-0">{{ __('Phone') }}</span>
                         <span class="font-medium text-gray-900">{{ $customer->phone }}</span>
                     </div>
                     @if($customer->phone_alt)
                     <div class="flex gap-2">
-                        <span class="text-gray-400 w-20 shrink-0">Alt Phone</span>
+                        <span class="text-gray-400 w-20 shrink-0">{{ __('Alt Phone') }}</span>
                         <span class="text-gray-700">{{ $customer->phone_alt }}</span>
                     </div>
                     @endif
                     @if($customer->email)
                     <div class="flex gap-2">
-                        <span class="text-gray-400 w-20 shrink-0">Email</span>
+                        <span class="text-gray-400 w-20 shrink-0">{{ __('Email') }}</span>
                         <span class="text-gray-700 truncate">{{ $customer->email }}</span>
                     </div>
                     @endif
                     @if($customer->city)
                     <div class="flex gap-2">
-                        <span class="text-gray-400 w-20 shrink-0">City</span>
+                        <span class="text-gray-400 w-20 shrink-0">{{ __('City') }}</span>
                         <span class="text-gray-700">{{ $customer->city }}</span>
                     </div>
                     @endif
                     @if($customer->address)
                     <div class="flex gap-2">
-                        <span class="text-gray-400 w-20 shrink-0">Address</span>
+                        <span class="text-gray-400 w-20 shrink-0">{{ __('Address') }}</span>
                         <span class="text-gray-700">{{ $customer->address }}</span>
                     </div>
                     @endif
                 </div>
                 @if($customer->notes)
                 <div class="border-t border-gray-50 pt-3">
-                    <p class="text-xs text-gray-400 mb-1">Notes</p>
+                    <p class="text-xs text-gray-400 mb-1">{{ __('Notes') }}</p>
                     <p class="text-sm text-gray-700">{{ $customer->notes }}</p>
                 </div>
                 @endif
@@ -70,15 +70,15 @@
 
             {{-- Revenue card --}}
             <div class="card p-5">
-                <p class="text-xs text-gray-400 font-medium mb-1">Total Revenue</p>
+                <p class="text-xs text-gray-400 font-medium mb-1">{{ __('Total Revenue') }}</p>
                 <p class="text-2xl font-bold text-gray-900">{{ number_format($total_revenue, 3) }} <span class="text-sm font-normal text-gray-500">OMR</span></p>
                 <div class="mt-3 flex gap-4 text-sm">
                     <div>
-                        <p class="text-gray-400 text-xs">Vehicles</p>
+                        <p class="text-gray-400 text-xs">{{ __('Vehicles') }}</p>
                         <p class="font-semibold text-gray-900">{{ $customer->vehicles->count() }}</p>
                     </div>
                     <div>
-                        <p class="text-gray-400 text-xs">Job Orders</p>
+                        <p class="text-gray-400 text-xs">{{ __('Job Orders') }}</p>
                         <p class="font-semibold text-gray-900">{{ $customer->jobOrders->count() }}</p>
                     </div>
                 </div>
@@ -91,15 +91,15 @@
             {{-- Vehicles --}}
             <div class="card">
                 <div class="card-header">
-                    <h3 class="font-semibold text-gray-900">Vehicles</h3>
-                    <a href="{{ route('vehicles.create', ['customer' => $customer->id]) }}" class="btn-primary btn-sm">+ Add</a>
+                    <h3 class="font-semibold text-gray-900">{{ __('Vehicles') }}</h3>
+                    <a href="{{ route('vehicles.create', ['customer' => $customer->id]) }}" class="btn-primary btn-sm">+ {{ __('Add') }}</a>
                 </div>
                 @if($customer->vehicles->isEmpty())
-                <p class="px-5 py-10 text-center text-sm text-gray-400">No vehicles registered yet.</p>
+                <p class="px-5 py-10 text-center text-sm text-gray-400">{{ __('No vehicles registered yet.') }}</p>
                 @else
                 <div class="overflow-x-auto">
                     <table class="table">
-                        <thead><tr><th>Plate #</th><th>Make / Model</th><th>Year</th><th>Color</th><th>Mileage</th><th></th></tr></thead>
+                        <thead><tr><th>{{ __('Plate #') }}</th><th>{{ __('Make / Model') }}</th><th>{{ __('Year') }}</th><th>{{ __('Color') }}</th><th>{{ __('Mileage') }}</th><th></th></tr></thead>
                         <tbody>
                             @foreach($customer->vehicles as $v)
                             <tr>
@@ -108,7 +108,7 @@
                                 <td class="text-gray-500">{{ $v->year }}</td>
                                 <td class="text-gray-500">{{ $v->color ?? '—' }}</td>
                                 <td class="text-gray-500">{{ $v->mileage ? number_format($v->mileage) . ' km' : '—' }}</td>
-                                <td><a href="{{ route('vehicles.show', $v) }}" class="text-xs text-orange-500 hover:underline">View →</a></td>
+                                <td><a href="{{ route('vehicles.show', $v) }}" class="text-xs text-orange-500 hover:underline">{{ __('View') }} →</a></td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -120,24 +120,24 @@
             {{-- Job Orders --}}
             <div class="card">
                 <div class="card-header">
-                    <h3 class="font-semibold text-gray-900">Job Orders</h3>
-                    <a href="{{ route('jobs.create') }}" class="btn-primary btn-sm">+ New Job</a>
+                    <h3 class="font-semibold text-gray-900">{{ __('Job Orders') }}</h3>
+                    <a href="{{ route('jobs.create') }}" class="btn-primary btn-sm">+ {{ __('New Job') }}</a>
                 </div>
                 @if($customer->jobOrders->isEmpty())
-                <p class="px-5 py-10 text-center text-sm text-gray-400">No job orders yet.</p>
+                <p class="px-5 py-10 text-center text-sm text-gray-400">{{ __('No job orders yet.') }}</p>
                 @else
                 <div class="overflow-x-auto">
                     <table class="table">
-                        <thead><tr><th>Job #</th><th>Vehicle</th><th>Status</th><th>Technician</th><th class="text-end">Total</th><th></th></tr></thead>
+                        <thead><tr><th>{{ __('Job #') }}</th><th>{{ __('Vehicle') }}</th><th>{{ __('Status') }}</th><th>{{ __('Technician') }}</th><th class="text-end">{{ __('Total') }}</th><th></th></tr></thead>
                         <tbody>
                             @foreach($customer->jobOrders as $j)
                             <tr>
                                 <td class="font-mono text-xs font-semibold text-orange-500">{{ $j->job_number }}</td>
                                 <td class="text-gray-500 text-xs">{{ $j->vehicle?->make }} {{ $j->vehicle?->model }}<br><span class="font-mono">{{ $j->vehicle?->plate_number }}</span></td>
                                 <td>@include('components.status-badge', ['status' => $j->status])</td>
-                                <td class="text-gray-500 text-xs">{{ $j->staff?->user?->name ?? '—' }}</td>
+                                <td class="text-gray-500 text-xs">{{ $j->assignedStaff->first()?->display_name ?? '—' }}</td>
                                 <td class="text-end font-semibold text-gray-900 text-xs">{{ number_format($j->total, 3) }} OMR</td>
-                                <td><a href="{{ route('jobs.show', $j) }}" class="text-xs text-orange-500 hover:underline">View →</a></td>
+                                <td><a href="{{ route('jobs.show', $j) }}" class="text-xs text-orange-500 hover:underline">{{ __('View') }} →</a></td>
                             </tr>
                             @endforeach
                         </tbody>

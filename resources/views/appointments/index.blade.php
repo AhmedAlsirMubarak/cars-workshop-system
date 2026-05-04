@@ -1,4 +1,4 @@
-<x-layouts.app title="Appointments">
+<x-layouts.app title="{{ __('Appointments') }}">
 
     {{-- Filters + New button --}}
     <form method="GET" action="{{ route('appointments.index') }}" class="flex flex-wrap items-center gap-3 mb-6">
@@ -6,26 +6,26 @@
             onchange="this.form.submit()" class="input w-44">
 
         <select name="status" onchange="this.form.submit()" class="input w-40">
-            <option value="">All statuses</option>
-            @foreach(['scheduled' => 'Scheduled', 'confirmed' => 'Confirmed', 'in_progress' => 'In Progress', 'completed' => 'Completed', 'cancelled' => 'Cancelled', 'no_show' => 'No Show'] as $val => $lbl)
+            <option value="">{{ __('All statuses') }}</option>
+            @foreach(['scheduled' => __('Scheduled'), 'confirmed' => __('Confirmed'), 'in_progress' => __('In Progress'), 'completed' => __('Completed'), 'cancelled' => __('Cancelled'), 'no_show' => __('No Show')] as $val => $lbl)
             <option value="{{ $val }}" @selected(request('status') === $val)>{{ $lbl }}</option>
             @endforeach
         </select>
 
         <select name="staff_id" onchange="this.form.submit()" class="input w-44">
-            <option value="">All staff</option>
+            <option value="">{{ __('All staff') }}</option>
             @foreach($staff as $s)
-            <option value="{{ $s->id }}" @selected(request('staff_id') == $s->id)>{{ $s->user->name }}</option>
+            <option value="{{ $s->id }}" @selected(request('staff_id') == $s->id)>{{ $s->display_name }}</option>
             @endforeach
         </select>
 
-        <button type="submit" class="btn-secondary">Filter</button>
-        <a href="{{ route('appointments.index') }}" class="text-xs text-gray-400 hover:text-gray-600">Clear</a>
+        <button type="submit" class="btn-secondary">{{ __('Filter') }}</button>
+        <a href="{{ route('appointments.index') }}" class="text-xs text-gray-400 hover:text-gray-600">{{ __('Clear') }}</a>
 
         {{-- New Appointment button opens modal --}}
         <button type="button" class="ms-auto btn-primary"
             x-data @click="$dispatch('open-modal', 'new-appointment')">
-            + New Appointment
+            + {{ __('New Appointment') }}
         </button>
     </form>
 
@@ -35,13 +35,13 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Date / Time</th>
-                        <th>Customer</th>
-                        <th>Vehicle</th>
-                        <th>Type</th>
-                        <th>Staff</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th>{{ __('Date / Time') }}</th>
+                        <th>{{ __('Customer') }}</th>
+                        <th>{{ __('Vehicle') }}</th>
+                        <th>{{ __('Type') }}</th>
+                        <th>{{ __('Staff') }}</th>
+                        <th>{{ __('Status') }}</th>
+                        <th>{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,16 +63,16 @@
                             @if(!$apt->jobOrder)
                             <form method="POST" action="{{ route('appointments.convert-to-job', $apt) }}" class="inline">
                                 @csrf
-                                <button type="submit" class="btn-secondary btn-sm">→ Job</button>
+                                <button type="submit" class="btn-secondary btn-sm">→ {{ __('Job') }}</button>
                             </form>
                             @else
-                            <a href="{{ route('jobs.show', $apt->jobOrder) }}" class="text-xs text-orange-500 hover:underline">View Job</a>
+                            <a href="{{ route('jobs.show', $apt->jobOrder) }}" class="text-xs text-orange-500 hover:underline">{{ __('View Job') }}</a>
                             @endif
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="py-12 text-center text-sm text-gray-400">No appointments found.</td>
+                        <td colspan="7" class="py-12 text-center text-sm text-gray-400">{{ __('No appointments found.') }}</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -99,13 +99,13 @@
                     @if(!$apt->jobOrder)
                     <form method="POST" action="{{ route('appointments.convert-to-job', $apt) }}" class="inline ms-auto">
                         @csrf
-                        <button type="submit" class="btn-secondary btn-sm">Convert to Job</button>
+                        <button type="submit" class="btn-secondary btn-sm">{{ __('Convert to Job') }}</button>
                     </form>
                     @endif
                 </div>
             </div>
             @empty
-            <p class="py-12 text-center text-sm text-gray-400">No appointments found.</p>
+            <p class="py-12 text-center text-sm text-gray-400">{{ __('No appointments found.') }}</p>
             @endforelse
         </div>
     </div>
@@ -126,7 +126,7 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 overflow-y-auto max-h-[90vh]"
             @click.stop>
             <div class="flex items-center justify-between mb-5">
-                <h3 class="font-semibold text-gray-900">New Appointment</h3>
+                <h3 class="font-semibold text-gray-900">{{ __('New Appointment') }}</h3>
                 <button @click="open = false" class="text-gray-400 hover:text-gray-600 transition">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
@@ -138,9 +138,9 @@
                 @csrf
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Customer <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Customer') }} <span class="text-red-500">*</span></label>
                     <select name="customer_id" required class="input w-full">
-                        <option value="">Select customer…</option>
+                        <option value="">{{ __('Select customer…') }}</option>
                         @foreach($customers as $c)
                         <option value="{{ $c->id }}">{{ $c->name }}</option>
                         @endforeach
@@ -148,9 +148,9 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Vehicle <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Vehicle') }} <span class="text-red-500">*</span></label>
                     <select name="vehicle_id" required class="input w-full">
-                        <option value="">Select vehicle…</option>
+                        <option value="">{{ __('Select vehicle…') }}</option>
                         @foreach($vehicles as $v)
                         <option value="{{ $v->id }}">{{ $v->make }} {{ $v->model }} — {{ $v->plate_number }} ({{ $v->customer?->name }})</option>
                         @endforeach
@@ -158,47 +158,47 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Assigned Staff</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Assigned Staff') }}</label>
                     <select name="staff_id" class="input w-full">
-                        <option value="">Unassigned</option>
+                        <option value="">{{ __('Unassigned') }}</option>
                         @foreach($staff as $s)
-                        <option value="{{ $s->id }}">{{ $s->user->name }}</option>
+                        <option value="{{ $s->id }}">{{ $s->display_name }}</option>
                         @endforeach
                     </select>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Date &amp; Time <span class="text-red-500">*</span></label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Date & Time') }} <span class="text-red-500">*</span></label>
                         <input type="datetime-local" name="scheduled_at" required
                             class="input w-full" min="{{ now()->addMinutes(5)->format('Y-m-d\TH:i') }}">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Duration (min)</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Duration (min)') }}</label>
                         <input type="number" name="duration_minutes" value="60" min="15" step="15" class="input w-full">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Type') }}</label>
                     <select name="type" class="input w-full">
-                        <option value="inspection">Inspection</option>
-                        <option value="repair">Repair</option>
-                        <option value="maintenance">Maintenance</option>
-                        <option value="diagnostic">Diagnostic</option>
-                        <option value="other">Other</option>
+                        <option value="inspection">{{ __('Inspection') }}</option>
+                        <option value="repair">{{ __('Repair') }}</option>
+                        <option value="maintenance">{{ __('Maintenance') }}</option>
+                        <option value="diagnostic">{{ __('Diagnostic') }}</option>
+                        <option value="other">{{ __('Other') }}</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Description') }}</label>
                     <textarea name="description" rows="3" class="input w-full"
-                        placeholder="Brief description of the appointment…"></textarea>
+                        placeholder="{{ __('Brief description of the appointment…') }}"></textarea>
                 </div>
 
                 <div class="flex gap-3 pt-2">
-                    <button type="submit" class="btn-primary flex-1">Book Appointment</button>
-                    <button type="button" @click="open = false" class="btn-secondary flex-1">Cancel</button>
+                    <button type="submit" class="btn-primary flex-1">{{ __('Book Appointment') }}</button>
+                    <button type="button" @click="open = false" class="btn-secondary flex-1">{{ __('Cancel') }}</button>
                 </div>
             </form>
         </div>

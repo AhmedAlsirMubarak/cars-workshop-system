@@ -53,7 +53,7 @@ class VehicleController extends Controller
 
     public function show(Vehicle $vehicle): \Illuminate\View\View
     {
-        $vehicle->load(['customer', 'jobOrders.staff.user', 'appointments.staff.user']);
+        $vehicle->load(['customer', 'jobOrders.assignedStaff', 'appointments.staff.user']);
 
         return view('vehicles.show', compact('vehicle'));
     }
